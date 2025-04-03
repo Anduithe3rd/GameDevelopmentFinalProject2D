@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 655960369}
   - component: {fileID: 655960370}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -578,7 +578,7 @@ GameObject:
   - component: {fileID: 722357128}
   - component: {fileID: 722357129}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: Hitbox (just reference)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -665,7 +665,7 @@ GameObject:
   - component: {fileID: 1570207824}
   - component: {fileID: 1570207825}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Eyes(just reference)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
