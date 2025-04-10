@@ -28,16 +28,11 @@ public class WeaponScript : MonoBehaviour
         Debug.Log("attacking hitbox is on!"); 
     }
 
-    void swingE()
-    {
-        Debug.Log("attack is finished hitbox is off!");
-  
-    }
-
     void idle()
     {
         action = false;
         anim.SetBool("Swinging", false);
+        Debug.Log("attack is finished hitbox is off!");
     }
 
 
