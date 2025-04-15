@@ -17,41 +17,52 @@ public class Movement : MonoBehaviour
     public GameObject hitbox;
     public bool rolling = false;
 
-    public bool grounded;
+    public bool grounded = false;
     public float jumpForce = 5f;
 
+    public LayerMask layer;
 
 
-    // Update is called once per frame
     void Update()
     {
         horizontal = Input.GetAxisRaw("Horizontal");
         turn();
 
+        //check if we are touching the ground
+        RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 0.6f, layer);
+        if (ground)
+        {
+            grounded = true;
+        }
+        else
+        {
+            grounded = false;
+        }
+
+        //jumping
+        if (Input.GetKeyDown("w") && grounded)
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse );
+        }
+
+
+        roll();
+
     }
 
     void FixedUpdate()
     {
+        //movement
         if (action == false)
         {
             rb.linearVelocity = new Vector2(horizontal * speedx, rb.linearVelocity.y);
-
         }
-
-
-        if (Input.GetKeyDown("w") && grounded)
-        {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-
-        }
-
-        roll();
-
 
     }
 
     void turn()
     {
+        //turns our character
         if (facingRight && horizontal < 0f || !facingRight && horizontal > 0f)
         {
             facingRight = !facingRight;
@@ -60,6 +71,7 @@ public class Movement : MonoBehaviour
             transform.localScale = localScale;
         }
 
+        //number used to decide rolling direction
         if (facingRight) dir = 1;
         else dir = -1;
     }
@@ -70,10 +82,14 @@ public class Movement : MonoBehaviour
         {
             anim.SetBool("Rolling", true);
             rb.AddForce(Vector2.right * rollforce * dir, ForceMode2D.Impulse);
+
+            //might want to make action an invoke function because it would let us talk to the weapon as well
+            //making sure we cant attack while rolling
             action = true;
 
         }
     }
+
 
     void rollingS()
     {
@@ -88,24 +104,6 @@ public class Movement : MonoBehaviour
 
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            grounded = true;
-        }
-        
-
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            grounded = false;
-        }
-    }
-
 }
+
 

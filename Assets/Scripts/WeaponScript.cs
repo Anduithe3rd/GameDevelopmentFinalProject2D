@@ -5,8 +5,6 @@ public class WeaponScript : MonoBehaviour
     public Animator anim;
     public bool action = false;
 
-
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,6 +16,8 @@ public class WeaponScript : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && action == false)
         {
             anim.SetBool("Swinging", true);
+
+            //used similar to players action bool but not sure if it should be independent or use an invoke
             action = true;
 
         }
