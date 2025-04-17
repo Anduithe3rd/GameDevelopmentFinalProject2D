@@ -5,34 +5,50 @@ public class WeaponScript : MonoBehaviour
     public Animator anim;
     public bool action = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public WeaponStats weaponStats;
+    private CharacterStats wielderStats;
+
+    public Collider2D hitbox;
+
     void Start()
     {
-        
+        hitbox.enabled = false;
     }
 
-    void Update()
+    public void Initialize(CharacterStats stats)
     {
-        if (Input.GetMouseButtonDown(0) && action == false)
-        {
-            anim.SetBool("Swinging", true);
-
-            //used similar to players action bool but not sure if it should be independent or use an invoke
-            action = true;
-
-        }
+        wielderStats = stats;
     }
 
     void swingS()
     {
+        hitbox.enabled = true;
         Debug.Log("attacking hitbox is on!"); 
     }
 
     void idle()
     {
-        action = false;
+        hitbox.enabled = false;
         anim.SetBool("Swinging", false);
         Debug.Log("attack is finished hitbox is off!");
+    }
+
+    public void attack()
+    {
+        anim.SetBool("Swinging", true);
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        HealthManager target = other.GetComponent<HealthManager>();
+
+        if (target != null)
+        {
+            int totalDamage = weaponStats.weaponDamage + wielderStats.damage;
+            target.TakeDamage(totalDamage);
+
+        }
     }
 
 

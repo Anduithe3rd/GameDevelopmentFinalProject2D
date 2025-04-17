@@ -22,6 +22,17 @@ public class Movement : MonoBehaviour
 
     public LayerMask layer;
 
+    public WeaponScript equippedWeapon;
+    public CharacterStats character;
+
+    void Start()
+    {
+        if (equippedWeapon != null)
+        {
+            //give weapon our stats
+            equippedWeapon.Initialize(character); 
+        }
+    }
 
     void Update()
     {
@@ -44,6 +55,8 @@ public class Movement : MonoBehaviour
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse );
         }
+
+        if(equippedWeapon != null)  weapon(); 
 
 
         roll();
@@ -102,6 +115,16 @@ public class Movement : MonoBehaviour
         anim.SetBool("Rolling", false);
         action = false;
 
+    }
+
+    void weapon()
+    {
+        if (Input.GetMouseButtonDown(0) && action == false)
+        {
+            equippedWeapon.attack();
+
+
+        }
     }
 
 }
