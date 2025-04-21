@@ -44,5 +44,6 @@ public class HealthManager : MonoBehaviour
     public void die()
     {
         Debug.Log($"{gameObject.name} died");
+        gameObject.SetActive(false);
     }
 }
