@@ -3,16 +3,29 @@ using UnityEngine;
 public class WeaponScript : MonoBehaviour
 {
     public Animator anim;
-    public bool action = false;
 
-    public WeaponStats weaponStats;
+    [Header("Stats & Cooldown")]
+    public WeaponStats weaponStats; 
     private CharacterStats wielderStats;
 
+    [Header("Hitbox")]
     public Collider2D hitbox;
+
+    // cooldown timer
+    private float cooldownTimer = 0f;
 
     void Start()
     {
         hitbox.enabled = false;
+        // Initialize cooldown ready
+        cooldownTimer = 0f;
+    }
+
+    void Update()
+    {
+        // Countdown the cooldown timer
+        if (cooldownTimer > 0f)
+            cooldownTimer -= Time.deltaTime;
     }
 
     public void Initialize(CharacterStats stats)
@@ -23,7 +36,7 @@ public class WeaponScript : MonoBehaviour
     void swingS()
     {
         hitbox.enabled = true;
-        Debug.Log("attacking hitbox is on!"); 
+        Debug.Log("attacking hitbox is on!");
     }
 
     void idle()
@@ -33,24 +46,29 @@ public class WeaponScript : MonoBehaviour
         Debug.Log("attack is finished hitbox is off!");
     }
 
-    public void attack()
+    public void Attack()
     {
-        anim.SetBool("Swinging", true);
+        if (cooldownTimer > 0f)
+        {
+            // Still cooling down
+            Debug.Log($"Weapon on cooldown: {cooldownTimer:F1}s remaining");
+            return;
+        }
 
+        anim.SetBool("Swinging", true);
+        cooldownTimer = weaponStats.weaponStamina;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        HealthManager target = other.GetComponent<HealthManager>();
+        if (!hitbox.enabled) return;
 
-        if (target != null)
+        HealthManager target = other.GetComponent<HealthManager>();
+        if (target != null && wielderStats != null)
         {
             int totalDamage = weaponStats.weaponDamage + wielderStats.damage;
             target.TakeDamage(totalDamage);
-
         }
     }
-
-
 
 }

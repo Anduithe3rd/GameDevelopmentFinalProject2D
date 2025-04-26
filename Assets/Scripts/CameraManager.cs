@@ -11,7 +11,7 @@ public class CameraManager : MonoBehaviour
     public float transitionSpeed = 3f;
 
     private Transform cam;
-    private int currentRoom = 0;
+    public int currentRoom = 0;
 
     void Awake()
     {

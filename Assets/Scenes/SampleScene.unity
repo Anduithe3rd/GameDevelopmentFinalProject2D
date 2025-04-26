@@ -226,7 +226,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!212 &304613184
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -291,8 +291,8 @@ Transform:
   m_GameObject: {fileID: 304613180}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.4, y: 1.52, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalPosition: {x: 5.42, y: 1.52, z: 0}
+  m_LocalScale: {x: -0.7444086, y: 0.7444086, z: 0.7444086}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3694311666277344479}
@@ -310,6 +310,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5def8c1e9eed0e242b44723cefdc58d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  patrolSpeed: 2
+  slowFollowSpeed: 1
+  chaseSpeed: 2.5
+  followRange: 4.31
+  attackRange: 1.92
+  chaseDuration: 3
+  tiredDuration: 2
+  idleDuration: 1
+  boundAmt: 3
+  roomIndex: 0
   equippedWeapon: {fileID: 2581059716819609954}
   character: {fileID: 11400000, guid: 4456d5e9dcd3d644092ee1aa042ad60c, type: 2}
   anim: {fileID: 0}
@@ -674,7 +684,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0017451942, y: 0.015708447}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -684,7 +694,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9685839, y: 0.95462036}
   m_EdgeRadius: 0
 --- !u!212 &655960367
 SpriteRenderer:
@@ -750,8 +760,8 @@ Transform:
   m_GameObject: {fileID: 655960363}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.61, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -5.63, y: 1.85, z: 0}
+  m_LocalScale: {x: 0.72158, y: 0.72158, z: 0.72158}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1570207824}
@@ -988,6 +998,7 @@ GameObject:
   m_Component:
   - component: {fileID: 722357128}
   - component: {fileID: 722357129}
+  - component: {fileID: 722357130}
   m_Layer: 0
   m_Name: Hitbox (just reference)
   m_TagString: Untagged
@@ -1065,6 +1076,42 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &722357130
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 722357127}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: -0.0040557478}
+  m_Radius: 0.4718499
 --- !u!1 &1109443449
 GameObject:
   m_ObjectHideFlags: 0
@@ -1233,6 +1280,7 @@ MonoBehaviour:
   - {fileID: 533561165}
   - {fileID: 663203012}
   transitionSpeed: 3
+  currentRoom: 0
 --- !u!4 &1178479326
 Transform:
   m_ObjectHideFlags: 0
@@ -1764,7 +1812,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 4584063588258038118}
-  action: 0
   weaponStats: {fileID: 11400000, guid: 7ac9c1c2aac13d3408c915cc2a250e99, type: 2}
   hitbox: {fileID: 405991251176185948}
 --- !u!111 &2838087476527536582
@@ -1816,7 +1863,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 3623291814074213781}
-  action: 0
   weaponStats: {fileID: 11400000, guid: 7ac9c1c2aac13d3408c915cc2a250e99, type: 2}
   hitbox: {fileID: 609964910349173935}
 --- !u!95 &3623291814074213781

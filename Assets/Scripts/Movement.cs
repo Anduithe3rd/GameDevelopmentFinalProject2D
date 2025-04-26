@@ -121,7 +121,7 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && action == false)
         {
-            equippedWeapon.attack();
+            equippedWeapon.Attack();
 
 
         }
