@@ -44,9 +44,7 @@ public class Movement : MonoBehaviour
         horizontal = Input.GetAxisRaw("Horizontal");
         turn();
 
-        // Countdown invulnerability
-        if (invulTimer > 0f)
-            invulTimer -= Time.deltaTime;
+
 
         //check if we are touching the ground
         RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 0.6f, layer);
@@ -146,12 +144,12 @@ public class Movement : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-
+        var hm = GetComponent<HealthManager>();
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            if (healthManager != null)
+            if (hm != null)
             {
-                healthManager.TakeDamage(3);
+                hm.TakeDamage(3);
             }
         }
     }

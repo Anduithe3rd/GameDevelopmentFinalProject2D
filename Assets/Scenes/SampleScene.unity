@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 304613186}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -154,6 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 11400000, guid: 4456d5e9dcd3d644092ee1aa042ad60c, type: 2}
   health: 0
+  isPlayer: 0
+  invulDuration: 1
 --- !u!61 &304613182
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -291,7 +293,7 @@ Transform:
   m_GameObject: {fileID: 304613180}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.42, y: 1.52, z: 0}
+  m_LocalPosition: {x: 4.72, y: 1.52, z: 0}
   m_LocalScale: {x: -0.7444086, y: 0.7444086, z: 0.7444086}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -615,6 +617,7 @@ MonoBehaviour:
   anim: {fileID: 655960370}
   rollforce: 8
   hitbox: {fileID: 722357127}
+  hurtbox: {fileID: 655960366}
   rolling: 0
   grounded: 0
   jumpForce: 10
@@ -823,6 +826,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 11400000, guid: c408b1592be71554a9373d843747d0f0, type: 2}
   health: 0
+  isPlayer: 1
+  invulDuration: 5
 --- !u!1 &663203011
 GameObject:
   m_ObjectHideFlags: 0

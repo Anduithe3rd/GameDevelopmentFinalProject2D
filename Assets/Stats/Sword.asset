@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Sword
   m_EditorClassIdentifier: 
   weaponDamage: 10
-  weaponStamina: 2
+  weaponStamina: 1
   weaponName: Sword
   weaponDesc: Black sword
