@@ -15,6 +15,7 @@ public class Movement : MonoBehaviour
     private bool action = false;
 
     public GameObject hitbox;
+    public Collider2D hurtbox;
     public bool rolling = false;
 
     public bool grounded = false;
@@ -25,6 +26,7 @@ public class Movement : MonoBehaviour
     public WeaponScript equippedWeapon;
     public CharacterStats character;
 
+
     void Start()
     {
         if (equippedWeapon != null)
@@ -32,12 +34,19 @@ public class Movement : MonoBehaviour
             //give weapon our stats
             equippedWeapon.Initialize(character); 
         }
+
+        if (hurtbox)
+            hurtbox.enabled = true;
     }
 
     void Update()
     {
         horizontal = Input.GetAxisRaw("Horizontal");
         turn();
+
+        // Countdown invulnerability
+        if (invulTimer > 0f)
+            invulTimer -= Time.deltaTime;
 
         //check if we are touching the ground
         RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 0.6f, layer);
@@ -98,6 +107,10 @@ public class Movement : MonoBehaviour
 
             //might want to make action an invoke function because it would let us talk to the weapon as well
             //making sure we cant attack while rolling
+
+            if (hurtbox)
+                hurtbox.enabled = false;
+
             action = true;
 
         }
@@ -112,6 +125,10 @@ public class Movement : MonoBehaviour
     void rollingE()
     {
         hitbox.SetActive(true);
+
+        if (hurtbox)
+            hurtbox.enabled = true;
+
         anim.SetBool("Rolling", false);
         action = false;
 
@@ -124,6 +141,18 @@ public class Movement : MonoBehaviour
             equippedWeapon.Attack();
 
 
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            if (healthManager != null)
+            {
+                healthManager.TakeDamage(3);
+            }
         }
     }
 
