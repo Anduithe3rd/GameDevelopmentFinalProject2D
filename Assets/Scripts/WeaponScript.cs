@@ -14,6 +14,8 @@ public class WeaponScript : MonoBehaviour
     // cooldown timer
     private float cooldownTimer = 0f;
 
+    private Movement wielder = null;
+
     void Start()
     {
         hitbox.enabled = false;
@@ -28,9 +30,10 @@ public class WeaponScript : MonoBehaviour
             cooldownTimer -= Time.deltaTime;
     }
 
-    public void Initialize(CharacterStats stats)
+    public void Initialize(CharacterStats stats, Movement movementRef = null)
     {
         wielderStats = stats;
+        wielder = movementRef;
     }
 
     void swingS()
@@ -48,10 +51,15 @@ public class WeaponScript : MonoBehaviour
 
     public void Attack()
     {
-        if (cooldownTimer > 0f)
+        /*if (cooldownTimer > 0f)
         {
             // Still cooling down
             Debug.Log($"Weapon on cooldown: {cooldownTimer:F1}s remaining");
+            return;
+        }
+        */
+        if (wielder != null && wielder.flinching)
+        {
             return;
         }
 
@@ -67,7 +75,7 @@ public class WeaponScript : MonoBehaviour
         if (target != null && wielderStats != null)
         {
             int totalDamage = weaponStats.weaponDamage + wielderStats.damage;
-            target.TakeDamage(totalDamage);
+            target.TakeDamage(totalDamage, transform.position);
         }
     }
 

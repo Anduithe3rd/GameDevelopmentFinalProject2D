@@ -26,13 +26,16 @@ public class Movement : MonoBehaviour
     public WeaponScript equippedWeapon;
     public CharacterStats character;
 
+    public bool flinching = false;        // flag to prevent input
+    public float knockbackForce = 5f;     // how hard we get pushed
+
 
     void Start()
     {
         if (equippedWeapon != null)
         {
             //give weapon our stats
-            equippedWeapon.Initialize(character); 
+            equippedWeapon.Initialize(character, this); 
         }
 
         if (hurtbox)
@@ -142,6 +145,17 @@ public class Movement : MonoBehaviour
         }
     }
 
+    void attackE()
+    {
+        action = false;
+    }
+
+    void attackPush()
+    {
+        rb.AddForce(Vector2.right * 2f * dir, ForceMode2D.Impulse);
+    }
+
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         var hm = GetComponent<HealthManager>();
@@ -149,10 +163,41 @@ public class Movement : MonoBehaviour
         {
             if (hm != null)
             {
-                hm.TakeDamage(3);
+                Vector2 hitSource = collision.transform.position;
+                hm.TakeDamage(3, hitSource);
             }
         }
     }
+
+    public void Interrupt(Vector2 hitSource)
+    {
+        // Stop input & actions
+        flinching = true;
+        action = true;
+
+        // Reset velocity
+        rb.linearVelocity = Vector2.zero;
+
+        // Calculate knockback direction and apply
+        Vector2 knockDir = (transform.position - (Vector3)hitSource).normalized;
+        rb.AddForce(knockDir * knockbackForce, ForceMode2D.Impulse);
+
+        // Play flinch animation
+        anim.SetTrigger("Flinch");
+
+        // Stop rolling/attacking
+        anim.SetBool("Rolling", false);
+
+        if (hurtbox) hurtbox.enabled = true;
+    }
+
+    void flinchE()
+    {
+        // Called at the end of the flinch animation
+        flinching = false;
+        action = false;
+    }
+
 
 }
 

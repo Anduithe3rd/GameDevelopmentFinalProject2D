@@ -25,22 +25,22 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int amt)
+    public void TakeDamage(int amt, Vector2 hitSource)
     {
         // If player and invulnerable, ignore
-        if (isPlayer && invulTimer > 0f)
-        {
-            return;
-        }
-
-        health -= amt;
-
         if (isPlayer)
         {
             invulTimer = invulDuration;
+
+            // Interrupt the player on hit
+            Movement m = GetComponent<Movement>();
+            if (m != null)
+            {
+                m.Interrupt(hitSource);
+            }
         }
 
-
+        health -= amt;
 
 
         Debug.Log($"{gameObject.name} took {amt} damage and has {health} health");
