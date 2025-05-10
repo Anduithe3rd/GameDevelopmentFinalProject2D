@@ -8,8 +8,7 @@ public class HealthManager : MonoBehaviour
 
     [Header("Invulnerability (Player Only)")]
     public bool isPlayer = false;
-    public float invulDuration = 1f;
-    private float invulTimer = 0f;
+    public bool isInvulnerable = false;
 
     void Start()
     {
@@ -18,21 +17,16 @@ public class HealthManager : MonoBehaviour
 
     void Update()
     {
-        // Countdown invulnerability timer for player
-        if (isPlayer && invulTimer > 0f)
-        {
-            invulTimer -= Time.deltaTime;
-        }
+
     }
 
     public void TakeDamage(int amt, Vector2 hitSource)
     {
-        // If player and invulnerable, ignore
+        if (isPlayer && isInvulnerable)
+            return;
+
         if (isPlayer)
         {
-            invulTimer = invulDuration;
-
-            // Interrupt the player on hit
             Movement m = GetComponent<Movement>();
             if (m != null)
             {
@@ -42,11 +36,13 @@ public class HealthManager : MonoBehaviour
 
         health -= amt;
 
-
         Debug.Log($"{gameObject.name} took {amt} damage and has {health} health");
 
-        if ( health <= 0 ) die();
+        if (health <= 0)
+            die();
     }
+
+
 
 
     public void Heal(int amt)
@@ -67,10 +63,19 @@ public class HealthManager : MonoBehaviour
 
     }
 
-
     public void die()
     {
         Debug.Log($"{gameObject.name} died");
         gameObject.SetActive(false);
+    }
+
+    public void invulS()
+    {
+        isInvulnerable = true;
+    }
+
+    public void invulE()
+    {
+        isInvulnerable = false;
     }
 }

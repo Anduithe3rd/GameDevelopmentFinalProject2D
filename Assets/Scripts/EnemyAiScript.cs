@@ -33,6 +33,7 @@ public class EnemyAiScript : MonoBehaviour
     private Transform player;
     private float leftBoundary, rightBoundary;
     private float prevX;
+    private bool hasAttacked = false;
 
     void Start()
     {
@@ -50,26 +51,25 @@ public class EnemyAiScript : MonoBehaviour
     {
         float dist = Vector2.Distance(transform.position, player.position);
 
-        if (dist <= attackRange)
+        if (dist <= attackRange && currentState != State.Attack && currentState != State.Idle && !hasAttacked)
         {
-            if (currentState != State.Attack)
-            {
-                currentState = State.Attack;
-                DoAttack();
-                // Enter idle after attack
-                currentState = State.Idle;
-                idleTimer = 0f;
-                chaseTimer = 0f;
-                tiredTimer = 0f;
-            }
-
-
-            UpdateFacing();
-            return;
+            currentState = State.Attack;
+            hasAttacked = true;
+            DoAttack();
+            idleTimer = 0f;
         }
+
+
+        UpdateFacing();
 
         switch (currentState)
         {
+            case State.Attack:
+                // Wait a frame, then go into idle (or set via animation event later)
+                currentState = State.Idle;
+                idleTimer = 0f;
+                break;
+            
 
             case State.Patrol:
 
@@ -111,6 +111,7 @@ public class EnemyAiScript : MonoBehaviour
                     {
                         currentState = State.SlowFollow;
                     }
+                    hasAttacked = false;
 
                 }
                 break;
@@ -133,7 +134,7 @@ public class EnemyAiScript : MonoBehaviour
                 break;
         }
 
-        //─── EXECUTE STATE BEHAVIOR ─────────────────────────
+
         switch (currentState)
         {
             case State.Patrol: Patrol(); break;

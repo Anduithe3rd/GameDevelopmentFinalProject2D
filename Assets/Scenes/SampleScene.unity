@@ -155,7 +155,7 @@ MonoBehaviour:
   character: {fileID: 11400000, guid: 4456d5e9dcd3d644092ee1aa042ad60c, type: 2}
   health: 0
   isPlayer: 0
-  invulDuration: 1
+  isInvulnerable: 0
 --- !u!61 &304613182
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -626,6 +626,8 @@ MonoBehaviour:
     m_Bits: 64
   equippedWeapon: {fileID: 3315947977147633041}
   character: {fileID: 11400000, guid: c408b1592be71554a9373d843747d0f0, type: 2}
+  flinching: 0
+  knockbackForce: 6
 --- !u!50 &655960365
 Rigidbody2D:
   serializedVersion: 5
@@ -827,7 +829,7 @@ MonoBehaviour:
   character: {fileID: 11400000, guid: c408b1592be71554a9373d843747d0f0, type: 2}
   health: 0
   isPlayer: 1
-  invulDuration: 5
+  isInvulnerable: 0
 --- !u!1 &663203011
 GameObject:
   m_ObjectHideFlags: 0

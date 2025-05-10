@@ -29,6 +29,8 @@ public class Movement : MonoBehaviour
     public bool flinching = false;        // flag to prevent input
     public float knockbackForce = 5f;     // how hard we get pushed
 
+    private Vector2 knockbackSource;      // where the hit came from
+
 
     void Start()
     {
@@ -172,18 +174,14 @@ public class Movement : MonoBehaviour
     public void Interrupt(Vector2 hitSource)
     {
         // Stop input & actions
+        anim.SetBool("FlinchP", true);
         flinching = true;
         action = true;
 
-        // Reset velocity
-        rb.linearVelocity = Vector2.zero;
-
-        // Calculate knockback direction and apply
-        Vector2 knockDir = (transform.position - (Vector3)hitSource).normalized;
-        rb.AddForce(knockDir * knockbackForce, ForceMode2D.Impulse);
-
-        // Play flinch animation
-        anim.SetTrigger("Flinch");
+        // Set knockback source
+        
+        knockbackSource = hitSource;
+        Invoke("applyKnockback", 0.05f);
 
         // Stop rolling/attacking
         anim.SetBool("Rolling", false);
@@ -191,9 +189,23 @@ public class Movement : MonoBehaviour
         if (hurtbox) hurtbox.enabled = true;
     }
 
+    void applyKnockback()
+    {
+        rb.linearVelocity = Vector2.zero;
+        Vector2 rawDir = ((Vector2)transform.position - knockbackSource);
+        float horizontalDir = rawDir.x >= 0 ? 1f : -1f;
+        Vector2 knockDir = new Vector2(horizontalDir, 0f);
+        rb.AddForce(knockDir * knockbackForce, ForceMode2D.Impulse);
+
+
+    }
+
+
+
     void flinchE()
     {
         // Called at the end of the flinch animation
+        anim.SetBool("FlinchP", false);
         flinching = false;
         action = false;
     }
