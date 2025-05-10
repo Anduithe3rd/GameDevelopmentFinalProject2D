@@ -49,10 +49,13 @@ public class Movement : MonoBehaviour
         horizontal = Input.GetAxisRaw("Horizontal");
         turn();
 
+        //check if we are touching the ground using raycast from below player
+        Vector2 groundOrigin = (Vector2)transform.position + new Vector2(0f, -0.5f);
 
+        Vector2 direction = Vector2.down * 0.1f;
+        Debug.DrawRay(groundOrigin, direction, Color.red);
 
-        //check if we are touching the ground
-        RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 0.6f, layer);
+        RaycastHit2D ground = Physics2D.Raycast(groundOrigin, Vector2.down, 0.1f, layer);
         if (ground)
         {
             grounded = true;
@@ -61,6 +64,7 @@ public class Movement : MonoBehaviour
         {
             grounded = false;
         }
+
 
         //jumping
         if (Input.GetKeyDown("w") && grounded)
@@ -106,7 +110,8 @@ public class Movement : MonoBehaviour
         if (Input.GetKeyDown("space") && action == false)
         {
             anim.SetBool("Rolling", true);
-            rb.AddForce(Vector2.right * rollforce * dir, ForceMode2D.Impulse);
+            //rb.AddForce(Vector2.right * rollforce * dir, ForceMode2D.Impulse);
+            rb.linearVelocity= new Vector2(rollforce * dir, rb.linearVelocity.y);
 
             //might want to make action an invoke function because it would let us talk to the weapon as well
             //making sure we cant attack while rolling
