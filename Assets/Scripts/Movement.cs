@@ -30,6 +30,7 @@ public class Movement : MonoBehaviour
     public float knockbackForce = 5f;     // how hard we get pushed
 
     private Vector2 knockbackSource;      // where the hit came from
+    public Transform weaponSlot;
 
 
     void Start()
@@ -74,6 +75,10 @@ public class Movement : MonoBehaviour
 
         if(equippedWeapon != null)  weapon(); 
 
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            DropCurrentWeapon();
+        }
 
         roll();
 
@@ -213,6 +218,63 @@ public class Movement : MonoBehaviour
         anim.SetBool("FlinchP", false);
         flinching = false;
         action = false;
+    }
+
+    public void PickupWeapon(GameObject weaponPickupObj)
+    {
+        
+        // Drop current weapon if one exists
+        if (equippedWeapon != null)
+        {
+            DropCurrentWeapon();
+        }
+
+        // Equip the new weapon
+        WeaponPickup pickup = weaponPickupObj.GetComponent<WeaponPickup>();
+        if (pickup == null || pickup.heldVersionPrefab == null)
+        {
+            Debug.LogWarning("Pickup failed: no heldVersionPrefab assigned!");
+            return;
+        }
+
+        GameObject newWeapon = Instantiate(pickup.heldVersionPrefab, weaponSlot);
+        newWeapon.transform.localPosition = Vector3.zero;
+        newWeapon.transform.localRotation = Quaternion.identity;
+        //newWeapon.transform.localScale = Vector3.one;
+
+
+        equippedWeapon = newWeapon.GetComponent<WeaponScript>();
+
+        if (equippedWeapon != null)
+        {
+            equippedWeapon.Initialize(character, this);
+        }
+        
+        // Remove the pickup object from the ground
+        Destroy(weaponPickupObj);
+    }
+
+    public void DropCurrentWeapon()
+    {
+        if (equippedWeapon == null)
+            return;
+
+        // Instantiate the dropped version of the weapon
+        GameObject dropped = Instantiate(equippedWeapon.droppedVersionPrefab);
+        dropped.transform.position = transform.position + Vector3.down * 0.2f; // drop slightly below
+
+
+        Collider2D col = dropped.GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = true;
+
+        WeaponPickup pickupScript = dropped.GetComponent<WeaponPickup>();
+        if (pickupScript != null)
+            pickupScript.enabled = true;
+
+  
+        Destroy(equippedWeapon.gameObject);
+        equippedWeapon = null;
     }
 
 

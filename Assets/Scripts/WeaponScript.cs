@@ -16,6 +16,9 @@ public class WeaponScript : MonoBehaviour
 
     private Movement wielder = null;
 
+    public GameObject droppedVersionPrefab;
+
+
     void Start()
     {
         hitbox.enabled = false;
