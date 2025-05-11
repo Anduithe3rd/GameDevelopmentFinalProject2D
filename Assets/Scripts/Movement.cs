@@ -240,7 +240,6 @@ public class Movement : MonoBehaviour
         GameObject newWeapon = Instantiate(pickup.heldVersionPrefab, weaponSlot);
         newWeapon.transform.localPosition = Vector3.zero;
         newWeapon.transform.localRotation = Quaternion.identity;
-        //newWeapon.transform.localScale = Vector3.one;
 
 
         equippedWeapon = newWeapon.GetComponent<WeaponScript>();
@@ -261,7 +260,8 @@ public class Movement : MonoBehaviour
 
         // Instantiate the dropped version of the weapon
         GameObject dropped = Instantiate(equippedWeapon.droppedVersionPrefab);
-        dropped.transform.position = transform.position + Vector3.down * 0.2f; // drop slightly below
+        Vector3 dropPos = new Vector3(transform.position.x, -1.16f, transform.position.z);
+        dropped.transform.position = dropPos;
 
 
         Collider2D col = dropped.GetComponent<Collider2D>();
