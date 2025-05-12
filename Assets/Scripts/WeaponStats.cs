@@ -7,4 +7,5 @@ public class WeaponStats : ScriptableObject
     public int weaponStamina;
     public string weaponName;
     public string weaponDesc;
+    public int maxComboSteps = 3;
 }

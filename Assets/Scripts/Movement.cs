@@ -11,6 +11,7 @@ public class Movement : MonoBehaviour
 
     public Animator anim;
     public float rollforce = 5f;
+    public float attackPushForce = 5f;
 
     private bool action = false;
 
@@ -26,11 +27,22 @@ public class Movement : MonoBehaviour
     public WeaponScript equippedWeapon;
     public CharacterStats character;
 
-    public bool flinching = false;        // flag to prevent input
-    public float knockbackForce = 5f;     // how hard we get pushed
+    public bool flinching = false;        //  prevent input
+    public float knockbackForce = 2f;     // how hard we get pushed
 
     private Vector2 knockbackSource;      // where the hit came from
     public Transform weaponSlot;
+
+    private int comboStep = 0;
+    private float comboTimer = 0f;
+    private float comboMaxDelay = 0.45f; // max time allowed between swings
+
+    public bool queuedAttack = false; // if we are waiting for the next attack
+
+    private float postComboCooldown = 0f;
+    private float postComboDelay = 0.2f; // small window to ignore input after combo ends
+
+
 
 
     void Start()
@@ -47,33 +59,29 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        horizontal = Input.GetAxisRaw("Horizontal");
+        if (!action)
+            horizontal = Input.GetAxisRaw("Horizontal");
+        else
+            horizontal = 0f;
+
         turn();
 
         //check if we are touching the ground using raycast from below player
         Vector2 groundOrigin = (Vector2)transform.position + new Vector2(0f, -0.5f);
-
         Vector2 direction = Vector2.down * 0.1f;
         Debug.DrawRay(groundOrigin, direction, Color.red);
 
-        RaycastHit2D ground = Physics2D.Raycast(groundOrigin, Vector2.down, 0.1f, layer);
-        if (ground)
-        {
-            grounded = true;
-        }
-        else
-        {
-            grounded = false;
-        }
+        RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 0.6f, layer);
+        grounded = ground;
 
 
         //jumping
-        if (Input.GetKeyDown("w") && grounded)
+        if (Input.GetKeyDown("w") && grounded && action == false)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse );
         }
 
-        if(equippedWeapon != null)  weapon(); 
+        //if(equippedWeapon != null)  weapon(); 
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -81,6 +89,28 @@ public class Movement : MonoBehaviour
         }
 
         roll();
+
+        //WORKING ON THIS
+        if (comboStep > 0)
+        {
+            comboTimer += Time.deltaTime;
+            if (comboTimer > comboMaxDelay)
+            {
+                ResetCombo();
+            }
+        }
+
+        if (postComboCooldown > 0f)
+            postComboCooldown -= Time.deltaTime;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (action)
+                queuedAttack = true;
+            else
+                DoComboStep();
+        }
+
 
     }
 
@@ -129,7 +159,6 @@ public class Movement : MonoBehaviour
         }
     }
 
-
     void rollingS()
     {
         hitbox.SetActive(false);
@@ -147,24 +176,82 @@ public class Movement : MonoBehaviour
 
     }
 
-    void weapon()
-    {
-        if (Input.GetMouseButtonDown(0) && action == false)
-        {
-            equippedWeapon.Attack();
-
-
-        }
-    }
-
-    void attackE()
+    void actionFalse()
     {
         action = false;
     }
 
+    void weapon()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (postComboCooldown > 0f)
+                return; // prevent restart spam just after combo ends
+
+            if (action)
+            {
+                if (comboStep > 0)
+                    queuedAttack = true;
+            }
+            else
+            {
+                DoComboStep();
+            }
+        }
+
+    }
+
+
+    void DoComboStep()
+    {
+        // Only allow combo to begin if we're not locked AND within time
+        if (comboStep == 0 && postComboCooldown > 0f)
+            return; // prevent restart spam
+
+        comboStep = Mathf.Clamp(comboStep + 1, 1, equippedWeapon.weaponStats.maxComboSteps);
+        comboTimer = 0f;
+        action = true;
+
+        anim.SetTrigger("PlayerAttacking"); // player movement animation
+        equippedWeapon.Attack(comboStep);   // sword animation trigger
+    }
+
+
+    void attackE()
+    {
+        if (queuedAttack)
+        {
+            queuedAttack = false;
+            DoComboStep(); // Continue to next swing
+        }
+        else
+        {
+            ResetCombo(); // Combo ended without follow-up
+        }
+    }
+
     void attackPush()
     {
-        rb.AddForce(Vector2.right * 2f * dir, ForceMode2D.Impulse);
+        rb.AddForce(Vector2.right * attackPushForce * dir, ForceMode2D.Impulse);
+    }
+
+    void ResetCombo()
+    {
+        comboStep = 0;
+        comboTimer = 0f;
+        queuedAttack = false;
+        //action = false;
+        postComboCooldown = postComboDelay;
+
+        if (equippedWeapon != null && equippedWeapon.anim != null)
+        {
+            equippedWeapon.anim.ResetTrigger("Swing1");
+            equippedWeapon.anim.ResetTrigger("Swing2");
+            equippedWeapon.anim.ResetTrigger("Swing3");
+            Debug.Log("Combo reset. Triggers cleared.");
+        }
+
+
     }
 
 
@@ -210,8 +297,6 @@ public class Movement : MonoBehaviour
 
     }
 
-
-
     void flinchE()
     {
         // Called at the end of the flinch animation
@@ -219,6 +304,7 @@ public class Movement : MonoBehaviour
         flinching = false;
         action = false;
     }
+
 
     public void PickupWeapon(GameObject weaponPickupObj)
     {

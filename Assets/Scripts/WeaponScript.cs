@@ -45,6 +45,11 @@ public class WeaponScript : MonoBehaviour
         Debug.Log("attacking hitbox is on!");
     }
 
+    void swingE()
+    {
+        hitbox.enabled = false;
+        Debug.Log("attack is finished hitbox is off!");
+    }
     void idle()
     {
         hitbox.enabled = false;
@@ -52,15 +57,18 @@ public class WeaponScript : MonoBehaviour
         Debug.Log("attack is finished hitbox is off!");
     }
 
+    
     public void Attack()
     {
-        /*if (cooldownTimer > 0f)
+        /*
+        if (cooldownTimer > 0f)
         {
             // Still cooling down
             Debug.Log($"Weapon on cooldown: {cooldownTimer:F1}s remaining");
             return;
         }
         */
+        
         if (wielder != null && wielder.flinching)
         {
             return;
@@ -69,6 +77,16 @@ public class WeaponScript : MonoBehaviour
         anim.SetBool("Swinging", true);
         cooldownTimer = weaponStats.weaponStamina;
     }
+    
+
+    public void Attack(int step)
+    {
+        if (anim != null)
+        {
+            anim.SetTrigger("Swing" + step); // Swing1, Swing2, etc.
+        }
+    }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
