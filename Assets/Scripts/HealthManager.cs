@@ -15,11 +15,6 @@ public class HealthManager : MonoBehaviour
         health = character.maxHealth;
     }
 
-    void Update()
-    {
-
-    }
-
     public void TakeDamage(int amt, Vector2 hitSource)
     {
         if (isPlayer && isInvulnerable)

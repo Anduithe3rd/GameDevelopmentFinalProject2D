@@ -35,6 +35,7 @@ public class EnemyAiScript : MonoBehaviour
     private float prevX;
     private bool hasAttacked = false;
 
+
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;

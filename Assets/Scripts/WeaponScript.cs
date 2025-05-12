@@ -60,14 +60,6 @@ public class WeaponScript : MonoBehaviour
     
     public void Attack()
     {
-        /*
-        if (cooldownTimer > 0f)
-        {
-            // Still cooling down
-            Debug.Log($"Weapon on cooldown: {cooldownTimer:F1}s remaining");
-            return;
-        }
-        */
         
         if (wielder != null && wielder.flinching)
         {

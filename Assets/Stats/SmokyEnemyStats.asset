@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 295e88b8c7f56a849bf2124c5bdffb8d, type: 3}
-  m_Name: Sword
+  m_Script: {fileID: 11500000, guid: 86b3364fc051d2c4b8bd03098ee196e1, type: 3}
+  m_Name: SmokyEnemyStats
   m_EditorClassIdentifier: 
-  weaponDamage: 10
-  weaponStamina: 1
-  weaponName: Sword
-  weaponDesc: Black sword
-  maxComboSteps: 3
+  damage: 5
+  maxHealth: 100
+  maxStamina: 0
