@@ -18,12 +18,16 @@ public class WeaponScript : MonoBehaviour
 
     public GameObject droppedVersionPrefab;
 
+    private SpecialAIDagger specialAi = null;
+
+
 
     void Start()
     {
         hitbox.enabled = false;
         // Initialize cooldown ready
         cooldownTimer = 0f;
+
     }
 
     void Update()
@@ -37,7 +41,11 @@ public class WeaponScript : MonoBehaviour
     {
         wielderStats = stats;
         wielder = movementRef;
+
+        // If the parent has a SpecialAI, store it
+        specialAi = GetComponentInParent<SpecialAIDagger>();
     }
+
 
     void swingS()
     {
@@ -48,27 +56,34 @@ public class WeaponScript : MonoBehaviour
     void swingE()
     {
         hitbox.enabled = false;
-        Debug.Log("attack is finished hitbox is off!");
+        //anim.SetBool("KnifeSwing", false);
+         Debug.Log("➡️ swingE() reached");
+
+        if (specialAi != null)
+        {
+            specialAi.OnWeaponSwingEnd(); // tell special dagger to continue
+        }
     }
     void idle()
     {
         hitbox.enabled = false;
-        anim.SetBool("Swinging", false);
-        Debug.Log("attack is finished hitbox is off!");
+        //anim.SetBool("KnifeSwing", false);
+        //Debug.Log("attack is finished hitbox is off!");
     }
 
     
     public void Attack()
     {
-        
         if (wielder != null && wielder.flinching)
-        {
             return;
-        }
 
-        anim.SetBool("Swinging", true);
-        cooldownTimer = weaponStats.weaponStamina;
+        anim.ResetTrigger("KnifeTrig");
+        anim.SetTrigger("KnifeTrig");
+        Debug.Log("🎯 Triggered KnifeSwing as trigger");
     }
+
+
+
     
 
     public void Attack(int step)

@@ -125,39 +125,39 @@ public class BossEnemyAi : MonoBehaviour
     {
         currentState = State.Rest;
         stateTimer = 0f;
+
+        if (anim != null)
+            anim.SetTrigger("EnemyTired"); // play rest animation
+
     }
 
     public void DefaultAttack()
     {
         if (equippedWeapon != null)
-            equippedWeapon.Attack();
-
-        attackCount++;
-        EnterRest();
+            equippedWeapon.Attack(); // will trigger hitbox + set "Swinging"
 
         if (anim != null)
-            anim.SetTrigger("EnemyAttack");
+            anim.SetTrigger("EnemyAttack"); // stab animation
+
+        attackCount++;
     }
+
 
     public void FacePlayer()
     {
         if (player == null) return;
-
-        if (player.position.x > transform.position.x && !facingRight)
+    
+        bool shouldFaceRight = player.position.x > transform.position.x;
+    
+        if (shouldFaceRight != facingRight)
         {
-            facingRight = true;
+            facingRight = shouldFaceRight;
             Vector3 scale = transform.localScale;
-            scale.x = Mathf.Abs(scale.x);
-            transform.localScale = scale;
-        }
-        else if (player.position.x < transform.position.x && facingRight)
-        {
-            facingRight = false;
-            Vector3 scale = transform.localScale;
-            scale.x = -Mathf.Abs(scale.x);
+            scale.x = facingRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
             transform.localScale = scale;
         }
     }
+
 
     public void GoToSpecialPosition()
     {
@@ -178,5 +178,11 @@ public class BossEnemyAi : MonoBehaviour
 
         if (anim != null)
             anim.SetTrigger("EnemySpecial");
+    }
+
+    public void ResetAttackState()
+    {
+        if (currentState == State.Attack)
+            currentState = State.Rest;
     }
 }
