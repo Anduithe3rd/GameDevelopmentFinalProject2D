@@ -18,7 +18,7 @@ public class WeaponScript : MonoBehaviour
 
     public GameObject droppedVersionPrefab;
 
-    private SpecialAIDagger specialAi = null;
+
 
 
 
@@ -42,8 +42,6 @@ public class WeaponScript : MonoBehaviour
         wielderStats = stats;
         wielder = movementRef;
 
-        // If the parent has a SpecialAI, store it
-        specialAi = GetComponentInParent<SpecialAIDagger>();
     }
 
 
@@ -59,10 +57,6 @@ public class WeaponScript : MonoBehaviour
         //anim.SetBool("KnifeSwing", false);
          Debug.Log("➡️ swingE() reached");
 
-        if (specialAi != null)
-        {
-            specialAi.OnWeaponSwingEnd(); // tell special dagger to continue
-        }
     }
     void idle()
     {

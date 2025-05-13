@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 295e88b8c7f56a849bf2124c5bdffb8d, type: 3}
   m_Name: Knife
   m_EditorClassIdentifier: 
-  weaponDamage: 10
+  weaponDamage: 12
   weaponStamina: 0
   weaponName: Knife
   weaponDesc: Smoky's knife allows user to dash
