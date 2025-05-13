@@ -15,7 +15,7 @@ public class Movement : MonoBehaviour
 
     private bool action = false;
 
-    public GameObject hitbox;
+    //public GameObject hitbox;
     public Collider2D hurtbox;
     public bool rolling = false;
 
@@ -67,11 +67,11 @@ public class Movement : MonoBehaviour
         turn();
 
         //check if we are touching the ground using raycast from below player
-        Vector2 groundOrigin = (Vector2)transform.position + new Vector2(0f, -0.5f);
+        Vector2 groundOrigin = (Vector2)transform.position + new Vector2(0f, -1f);
         Vector2 direction = Vector2.down * 0.1f;
         Debug.DrawRay(groundOrigin, direction, Color.red);
 
-        RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 0.6f, layer);
+        RaycastHit2D ground = Physics2D.Raycast(transform.position, -Vector2.up, 1f, layer);
         grounded = ground;
 
 
@@ -161,12 +161,12 @@ public class Movement : MonoBehaviour
 
     void rollingS()
     {
-        hitbox.SetActive(false);
+        //hitbox.SetActive(false);
     }
 
     void rollingE()
     {
-        hitbox.SetActive(true);
+        //hitbox.SetActive(true);
 
         if (hurtbox)
             hurtbox.enabled = true;

@@ -9,6 +9,8 @@ public class WeaponPickup : MonoBehaviour
     private GameObject player;
     public GameObject heldVersionPrefab;
 
+    private GameObject currentUI;
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -51,13 +53,23 @@ public class WeaponPickup : MonoBehaviour
 
     void ShowWeaponStatsUI()
     {
-        //Create UI popup 
+        if (weaponUIPrefab != null && currentUI == null)
+        {
+            currentUI = Instantiate(weaponUIPrefab, transform.position + Vector3.up * 2, Quaternion.identity); // adjust position as needed
+            WeaponInfoUI ui = currentUI.GetComponent<WeaponInfoUI>();
+            if (ui != null)
+                ui.Setup(stats);
+        }
         Debug.Log("Show stats for: " + stats.weaponName);
     }
 
     void HideWeaponStatsUI()
     {
-        //Hide the UI when leaving the trigger
+        if (currentUI != null)
+        {
+            Destroy(currentUI);
+            currentUI = null;
+        }
         Debug.Log("Hide weapon stats");
     }
 }

@@ -54,14 +54,14 @@ public class WeaponScript : MonoBehaviour
     void swingE()
     {
         hitbox.enabled = false;
-        //anim.SetBool("KnifeSwing", false);
+        anim.SetBool("KnifeSwing", false);
          Debug.Log("➡️ swingE() reached");
 
     }
     void idle()
     {
         hitbox.enabled = false;
-        //anim.SetBool("KnifeSwing", false);
+        anim.SetBool("KnifeSwing", false);
         //Debug.Log("attack is finished hitbox is off!");
     }
 
@@ -71,8 +71,9 @@ public class WeaponScript : MonoBehaviour
         if (wielder != null && wielder.flinching)
             return;
 
-        anim.ResetTrigger("KnifeTrig");
-        anim.SetTrigger("KnifeTrig");
+        //anim.ResetTrigger("KnifeTrig");
+        //anim.SetTrigger("KnifeTrig");
+        anim.SetBool("KnifeSwing", true);
         Debug.Log("🎯 Triggered KnifeSwing as trigger");
     }
 

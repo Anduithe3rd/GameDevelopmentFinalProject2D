@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class HealthManager : MonoBehaviour
@@ -61,8 +62,18 @@ public class HealthManager : MonoBehaviour
     public void die()
     {
         Debug.Log($"{gameObject.name} died");
-        gameObject.SetActive(false);
+    
+        if (isPlayer)
+        {
+            SceneManager.LoadScene("SampleScene");
+        }
+        else
+        {
+            GetComponent<EnemyAiScript>()?.DropWeapon();
+            gameObject.SetActive(false);
+        }
     }
+
 
     public void invulS()
     {

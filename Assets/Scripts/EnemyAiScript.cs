@@ -44,8 +44,11 @@ public class EnemyAiScript : MonoBehaviour
         rightBoundary = transform.position.x + boundAmt;
         prevX = transform.position.x;
 
+        anim.SetTrigger("Walk");
+
         if (equippedWeapon != null)
             equippedWeapon.Initialize(character);
+
     }
 
     void Update()
@@ -74,7 +77,7 @@ public class EnemyAiScript : MonoBehaviour
 
             case State.Patrol:
 
-
+                anim.SetTrigger("Walk");
                 if (dist <= followRange)
                 {
                     currentState = State.Chase;
@@ -83,6 +86,7 @@ public class EnemyAiScript : MonoBehaviour
                 break;
 
             case State.Chase:
+                anim.SetTrigger("Run");
                 chaseTimer += Time.deltaTime;
 
                 if (chaseTimer >= chaseDuration)
@@ -118,6 +122,7 @@ public class EnemyAiScript : MonoBehaviour
                 break;
 
             case State.SlowFollow:
+                anim.SetTrigger("Walk");
                 if (dist <= followRange)
                 {
                     currentState = State.Chase;
@@ -126,6 +131,7 @@ public class EnemyAiScript : MonoBehaviour
                 break;
 
             case State.Idle:
+                anim.SetTrigger("Idle");
                 idleTimer += Time.deltaTime;
                 if (idleTimer >= idleDuration)
                 {
@@ -209,5 +215,27 @@ public class EnemyAiScript : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+
+    public void DropWeapon()
+    {
+        if (equippedWeapon == null)
+            return;
+    
+        GameObject dropped = Instantiate(equippedWeapon.droppedVersionPrefab);
+        Vector3 dropPos = new Vector3(transform.position.x, -1.16f, transform.position.z);
+        dropped.transform.position = dropPos;
+    
+        Collider2D col = dropped.GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = true;
+    
+        WeaponPickup pickupScript = dropped.GetComponent<WeaponPickup>();
+        if (pickupScript != null)
+            pickupScript.enabled = true;
+    
+        Destroy(equippedWeapon.gameObject);
+        equippedWeapon = null;
+    }
+
 }
 
