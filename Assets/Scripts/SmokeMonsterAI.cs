@@ -4,28 +4,31 @@ using UnityEngine;
 public class SmokeMonsterAI : MonoBehaviour
 {
     [Header("References")]
-    public Animator knifeAnim;        // Animator on the knife
-    public Animator bodyAnim;         // Animator on the boss body
-    public Rigidbody2D rb;            // Rigidbody on the boss body
-    public Collider2D hitbox;         // Hitbox to enable/disable
-    public Transform player;          // Player transform
+    public Animator knifeAnim;
+    public Animator bodyAnim;
+    public Rigidbody2D rb;
+    public Collider2D hitbox;
+    public Collider2D bossCollider;
+    public Rigidbody2D knifeRb;
+    public Collider2D knifeCollider;
+    public Transform player;
+    public SpriteRenderer bossSprite;
 
     [Header("Settings")]
+    public int roomIndex;
     public float approachSpeed = 0.5f;
-    public float attackRange = 1.5f;
-    public float yLockDuringSmoke = 0f;
-    public float smokeSpeed = 2f;
+    public float smokeSpeed = 4f;
     public float smokeDuration = 4f;
     public float positionDelay = 2f;
 
     [Header("Visuals")]
-    public SpriteRenderer bossSprite;
     public Color smokyColor = new Color(0f, 0f, 0f, 0.6f);
     public Color normalColor = Color.white;
 
-    private enum State { Idle, Prep, Flurry, Tired, Smoke }
+    private enum State { Idle, Smoke, Prep, Flurry, Tired }
     private State currentState = State.Idle;
 
+    private float yLock = 0f;
     private float stateTimer = 0f;
     private Queue<Vector2> playerTrail = new Queue<Vector2>();
     private float recordInterval = 0.1f;
@@ -34,19 +37,37 @@ public class SmokeMonsterAI : MonoBehaviour
     void Start()
     {
         if (!player)
+        {
             player = GameObject.FindWithTag("Player")?.transform;
+        }
 
-        StartPrep();
+        bossSprite.color = normalColor;
+        currentState = State.Idle;
+
     }
 
     void Update()
     {
+
+        // Stay inactive until the player enters our room
+        if (currentState == State.Idle)
+        {
+            if (CameraManager.Instance.GetCurrentRoom() == roomIndex)
+            {
+                EnterSmoke();
+            }
+            return;
+        }
+
+        if (player.position.x > transform.position.x)
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        else
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
+
         switch (currentState)
         {
             case State.Prep:
-                MoveTowardPlayer();
-                break;
-
             case State.Flurry:
                 MoveTowardPlayer();
                 break;
@@ -59,14 +80,53 @@ public class SmokeMonsterAI : MonoBehaviour
                 RecordPlayerPosition();
                 FollowDelayedTrail();
                 stateTimer += Time.deltaTime;
-
                 if (stateTimer >= smokeDuration)
+                {
                     ExitSmoke();
+                    Debug.Log("Out of timee!");
+                }
+                Debug.Log("Smoke Timer: " + stateTimer);
+
                 break;
         }
     }
 
-    // ------------------- PHASE TRIGGERS -------------------
+    // ------------------- State Transitions -------------------
+
+    void EnterSmoke()
+    {
+        currentState = State.Smoke;
+        stateTimer = 0f;
+        yLock = transform.position.y;
+
+        DisablePhysics();
+        knifeAnim.SetTrigger("Smoke");
+        bodyAnim.SetTrigger("BodyIdle");
+        bossSprite.color = smokyColor;
+
+        rb.simulated = false;
+        knifeRb.simulated = false;
+
+        if (bossCollider) bossCollider.enabled = false;
+        if (knifeCollider) knifeCollider.enabled = false;
+
+
+    }
+
+    void ExitSmoke()
+    {
+        EnablePhysics();
+        bossSprite.color = normalColor;
+        StartPrep();
+
+        rb.simulated = true;
+        knifeRb.simulated = true;
+
+        if (bossCollider) bossCollider.enabled = true;
+        if (knifeCollider) knifeCollider.enabled = true;
+
+
+    }
 
     void StartPrep()
     {
@@ -75,94 +135,41 @@ public class SmokeMonsterAI : MonoBehaviour
         bodyAnim.SetTrigger("BodyPrep");
     }
 
-    public void StartFlurry() // ← Called by animation event at end of Prep
+    public void StartFlurry() // animation event at end of Prep
     {
         currentState = State.Flurry;
         knifeAnim.SetTrigger("Flurry");
         bodyAnim.SetTrigger("BodyFlurry");
     }
 
-    public void FlurryOver() // ← Called by animation event at end of Flurry
+    public void FlurryOver() // animation event at end of Flurry
     {
         currentState = State.Tired;
         stateTimer = 0f;
         knifeAnim.SetTrigger("Tired");
         bodyAnim.SetTrigger("BodyTired");
-
-        if (bodyAnim != null)
-            bodyAnim.SetBool("Walking", false);
-
     }
 
-    public void EndTired() // ← Called by animation event at end of Tired
+    public void EndTired() // animation event at end of Tired
     {
         EnterSmoke();
     }
 
-    void EnterSmoke()
-    {
-        currentState = State.Smoke;
-        stateTimer = 0f;
-        yLockDuringSmoke = transform.position.y;
-
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-            rb.gravityScale = 0f;
-        }
-
-        if (bossSprite != null)
-            bossSprite.color = smokyColor;
-
-        knifeAnim.SetTrigger("Smoke");
-        bodyAnim.SetTrigger("BodyIdle");
-    }
-
-    void ExitSmoke()
-    {
-        if (rb != null)
-            rb.gravityScale = 1f;
-
-        if (bossSprite != null)
-            bossSprite.color = normalColor;
-
-        if (bodyAnim != null)
-            bodyAnim.SetBool("Walking", false);
-
-
-        playerTrail.Clear();
-        StartPrep();
-    }
-
-    // ------------------- MOVEMENT + HITBOX -------------------
+    // ------------------- Movement + Trail -------------------
 
     void MoveTowardPlayer()
     {
         if (player == null) return;
-        if (bodyAnim != null)
-            bodyAnim.SetBool("Walking", true);
-
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.linearVelocity = new Vector2(direction.x * approachSpeed, rb.linearVelocity.y);
-    }
 
-    public void swingS()
-    {
-        if (hitbox != null)
-            hitbox.enabled = true;
-    }
 
-    public void swingE()
-    {
-        if (hitbox != null)
-            hitbox.enabled = false;
     }
 
     void RecordPlayerPosition()
     {
         recordTimer += Time.deltaTime;
-
         if (recordTimer >= recordInterval)
         {
             playerTrail.Enqueue(player.position);
@@ -177,14 +184,49 @@ public class SmokeMonsterAI : MonoBehaviour
     void FollowDelayedTrail()
     {
         if (playerTrail.Count == 0) return;
-        if (bodyAnim != null)
-            bodyAnim.SetBool("Walking", true);
-
 
         Vector2 target = playerTrail.Peek();
         Vector2 current = transform.position;
-        Vector2 newPos = Vector2.MoveTowards(current, new Vector2(target.x, yLockDuringSmoke), smokeSpeed * Time.deltaTime);
+        Vector2 next = Vector2.MoveTowards(current, new Vector2(target.x, yLock), smokeSpeed * Time.deltaTime);
+        rb.MovePosition(next);
+    }
 
-        rb.MovePosition(newPos);
+    // ------------------- Hitbox Toggle -------------------
+
+    public void swingS()
+    {
+        if (hitbox != null)
+            hitbox.enabled = true;
+    }
+
+    public void swingE()
+    {
+        if (hitbox != null)
+            hitbox.enabled = false;
+    }
+
+    // ------------------- Physics Handling -------------------
+
+    void DisablePhysics()
+    {
+        Debug.Log("Disabling physics");
+        rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 0f;
+        rb.simulated = false;
+        if (knifeRb) knifeRb.simulated = false;
+
+        if (bossCollider) bossCollider.enabled = false;
+        if (knifeCollider) knifeCollider.enabled = false;
+    }
+
+    void EnablePhysics()
+    {
+        Debug.Log("Enabling physics");
+        rb.gravityScale = 1f;
+        rb.simulated = true;
+        if (knifeRb) knifeRb.simulated = true;
+
+        if (bossCollider) bossCollider.enabled = true;
+        if (knifeCollider) knifeCollider.enabled = true;
     }
 }

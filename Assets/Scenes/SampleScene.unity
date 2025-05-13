@@ -2473,14 +2473,16 @@ MonoBehaviour:
   bodyAnim: {fileID: 220004164}
   rb: {fileID: 220004165}
   hitbox: {fileID: 5347810780237860906}
+  bossCollider: {fileID: 220004166}
+  knifeRb: {fileID: 0}
+  knifeCollider: {fileID: 5347810780237860906}
   player: {fileID: 0}
-  approachSpeed: 0.5
-  attackRange: 1.5
-  yLockDuringSmoke: 0
-  smokeSpeed: 2
-  smokeDuration: 4
-  positionDelay: 2
   bossSprite: {fileID: 220004167}
+  roomIndex: 1
+  approachSpeed: 2
+  smokeSpeed: 15
+  smokeDuration: 10
+  positionDelay: 2
   smokyColor: {r: 0, g: 0, b: 0, a: 0.6}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &6673883035369997534 stripped

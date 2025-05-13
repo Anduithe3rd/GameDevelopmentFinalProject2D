@@ -309,7 +309,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 3.1333334
+  - time: 3.15
     functionName: FlurryOver
     data: 
     objectReferenceParameter: {fileID: 0}
