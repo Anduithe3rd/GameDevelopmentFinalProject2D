@@ -1,7 +1,7 @@
 # GameDevelopmentFinalProject2D
 
 ## Group Members:
-Chelsey Silva, Jaden Arredondo, Andrew Harrison
+Chelsey Silva, Andrew Harrison
 
 ## Premise: 
 survival, discovery of what's going on in the world, leveling up to defeat the final boss in order to defeat and get rid of corruption from the world.
